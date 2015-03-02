@@ -1,0 +1,34 @@
+<project name="lab01" default="run" basedir=".">
+    <description>
+        simple example build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="init" location="."/>
+  <property name="clean" location="build"/>
+  <property name="compile"  location="."/>
+  <property name="run"  location="build"/>
+
+  <target name="init">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="build"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- <javac srcdir="${src}" destdir="${build}"/> -->
+  	<javac srcdir="src" destdir="build" />
+  </target>
+
+  <target name="run" depends="compile"
+        description="generate the distribution" >
+  	 <java classpath="build" classname="lab01.Main" fork="false" spawn="false">
+  	   </java>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="build"/>
+  </target>
+</project>
