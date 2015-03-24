@@ -5,8 +5,7 @@ import javassist.*;
 public class DebugTranslator implements Translator {
 
 	@Override
-	public void onLoad(ClassPool pool, String className) throws NotFoundException,
-			CannotCompileException {
+	public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
 		// TODO Auto-generated method stub
 		CtClass ctClass = pool.get(className);
 		modifyMethods(ctClass);
@@ -15,10 +14,10 @@ public class DebugTranslator implements Translator {
 
 	private void modifyMethods(CtClass ctClass) {
 		for(CtMethod m: ctClass.getDeclaredMethods()){
-			CtClass etype;
 			try {
+			 	CtClass etype;
 				etype = ClassPool.getDefault().get("java.lang.Exception");
-				m.addCatch("{ DebuggerCli.trataInput(); throw $e; }", etype);
+				m.addCatch("{CommandClass.CheckInput(); throw $e;}", etype);
 			} catch (NotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -26,7 +25,6 @@ public class DebugTranslator implements Translator {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
 		
 	}
@@ -35,7 +33,6 @@ public class DebugTranslator implements Translator {
 	public void start(ClassPool arg0) throws NotFoundException,
 			CannotCompileException {
 		// TODO Auto-generated method stub
-
 	}
 
 }
