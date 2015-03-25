@@ -21,7 +21,8 @@ public class DebugTranslator implements Translator {
 					cm.instrument(new ExprEditor() {
 						public void edit(MethodCall m) throws CannotCompileException {
 						        System.out.println(m.getMethodName());
-								m.replace("{ist.meic.pa.CommandClass.execute($0, \""+ m.getMethodName()+"\", $args);$_ = $proceed($$);}");
+								m.replace("{ist.meic.pa.DebuggerCli.test(); $_ = $proceed($$);}");
+						        //m.replace("{ist.meic.pa.CommandClass.execute($0, \""+ m.getMethodName()+"\", $args);$_ = $proceed($$);}");
 						}
 					});
 			}
