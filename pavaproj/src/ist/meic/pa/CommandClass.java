@@ -1,12 +1,30 @@
 package ist.meic.pa;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javassist.*;
+
 public class CommandClass {
 	
-public static void CheckInput(){
+	public static void test(){
+		System.out.println("estou ca");
+	}
+	
+	public static void execute(Object o, String methodName, Object[] args){
 		
+		try{
+			System.out.println("estou ca");
+			o.getClass().getMethod(methodName, (Class[])args).invoke(args);
+			System.out.println("vou sair");
+		}catch(Exception e){
+			System.out.println("apanhei");
+		}
+	}
+
+	public static void CheckInput() {
+
 		Scanner s = new Scanner(System.in);
 		CommandClass commandC = new CommandClass();
 
@@ -15,16 +33,16 @@ public static void CheckInput(){
 			String[] tokens = arg.split("[ ]+");
 
 			ArrayList<String> arguments = new ArrayList<String>();
-			for(int i = 1;i<tokens.length;i++){
+			for (int i = 1; i < tokens.length; i++) {
 				arguments.add(tokens[i]);
 			}
-			//CommandClass.class.getMethod(tokens[0]).invoke(commandC, "oi");
-			switch(tokens[0]){
+			// CommandClass.class.getMethod(tokens[0]).invoke(commandC, "oi");
+			switch (tokens[0]) {
 
 			case "Abort":
 				commandC.commandAbort();
 				break;
-				
+
 			case "Info":
 				commandC.commandInfo();
 				break;
@@ -36,11 +54,11 @@ public static void CheckInput(){
 			case "Return":
 				commandC.commandReturn(tokens[1]);
 				break;
-			
+
 			case "Get":
 				commandC.commandGet(tokens[1]);
 				break;
-				
+
 			case "Set":
 				commandC.commandSet(tokens[1], tokens[2]);
 				break;
@@ -48,38 +66,41 @@ public static void CheckInput(){
 			case "Retry":
 				commandC.commandRetry();
 				break;
-			
-			default: 
+
+			default:
 				System.out.println("Syke thats the wrong command");
 				break;
-				
+
 			}
 		}
 	}
 
-	private void commandAbort(){
+	private void commandAbort() {
 		System.out.println("sup bitches");
 	}
-	
-	private void commandInfo(){
-		//TODO
+
+	private void commandInfo() {
+		// TODO
 	}
-	
-	private void commandThrow(){
-		//TODO
+
+	private void commandThrow() {
+		// TODO
 	}
-	
-	private void commandReturn(Object o){
-		//TODO
+
+	private void commandReturn(Object o) {
+		// TODO
 	}
-	private void commandGet(String s){
+
+	private void commandGet(String s) {
 		System.out.println("sup niggas" + s);
 	}
-	private void commandSet(String s,Object o){
-		//TODO
+
+	private void commandSet(String s, Object o) {
+		// TODO
 	}
-	private void commandRetry(){
-		//TODO
+
+	private void commandRetry() {
+		// TODO
 	}
-	
+
 }

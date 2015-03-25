@@ -1,8 +1,5 @@
 package ist.meic.pa;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import javassist.*;
 
 public final class DebuggerCli {
@@ -14,14 +11,16 @@ public final class DebuggerCli {
 		if(args.length == 0)
 			InjectCode(test);
 		else
-			InjectCode(test);
+			InjectCode(args);
 	}
 	
 	public static void InjectCode(String[] file) throws Throwable{
-		pool.importPackage("ist.meic.pa");
 		Loader javaLoader = new Loader(pool);
 		Translator translator = new DebugTranslator();
 		javaLoader.addTranslator(pool, translator);
+		/*Class<?> rtClass = javaLoader.loadClass(file[0]);
+		rtClass.getDeclaredMethod("main", new Class[] { String[].class })
+        .invoke(null, new Object[] { file});*/
 		javaLoader.run(file);
 	}
 }
