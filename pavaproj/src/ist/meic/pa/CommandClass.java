@@ -7,24 +7,32 @@ import java.util.Scanner;
 import javassist.*;
 
 public class CommandClass {
-	
+	static Throwable _t;
 	public static void test(){
 		System.out.println("estou ca");
 	}
 	
 	public static void execute(Object o, String methodName, Object[] args){
 		
+	    Class[] v= new Class[args.length];
+	    for(int i=0;i<args.length;i++){
+	        v[i]=args[i].getClass();
+	    }
+	    
 		try{
-			System.out.println("estou ca");
-			o.getClass().getMethod(methodName, (Class[])args).invoke(args);
+			System.out.println("estou caa");
+			o.getClass().getMethod(methodName, v).invoke(args);
 			System.out.println("vou sair");
 		}catch(Exception e){
-			System.out.println("apanhei");
+		e.printStackTrace();
+		  //  CheckInput(e);
+		
 		}
+		
 	}
 
-	public static void CheckInput() {
-
+	public static void CheckInput(Throwable t) {
+	   _t = t;
 		Scanner s = new Scanner(System.in);
 		CommandClass commandC = new CommandClass();
 
@@ -76,7 +84,7 @@ public class CommandClass {
 	}
 
 	private void commandAbort() {
-		System.out.println("sup bitches");
+		System.exit(0);
 	}
 
 	private void commandInfo() {
@@ -84,7 +92,8 @@ public class CommandClass {
 	}
 
 	private void commandThrow() {
-		// TODO
+	  //  throw t;
+		
 	}
 
 	private void commandReturn(Object o) {

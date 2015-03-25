@@ -2,7 +2,7 @@ package ist.meic.pa;
 
 import javassist.*;
 
-public final class DebuggerCli {
+public final class DebuggerCLI {
 	
 	private static ClassPool pool = ClassPool.getDefault();
 

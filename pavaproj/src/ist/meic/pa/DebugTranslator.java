@@ -20,7 +20,8 @@ public class DebugTranslator implements Translator {
 			if(!ctClass.getName().equals("ist.meic.pa.CommandClass")){
 					cm.instrument(new ExprEditor() {
 						public void edit(MethodCall m) throws CannotCompileException {
-								m.replace("{ist.meic.pa.CommandClass.execute($0, "+m.getMethodName()+", $args);$_ = $proceed($$);}");
+						        System.out.println(m.getMethodName());
+								m.replace("{ist.meic.pa.CommandClass.execute($0, \""+ m.getMethodName()+"\", $args);$_ = $proceed($$);}");
 						}
 					});
 			}

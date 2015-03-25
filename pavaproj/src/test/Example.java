@@ -9,11 +9,11 @@ class A {
 		System.out.println("Inside A.foo");
 
 		if (a == 1) {
-
+		    System.out.println("1");
 			return b.bar(0);
-
+		
 		} else {
-
+		    System.out.println("2");
 			return b.baz(null);
 
 		}
