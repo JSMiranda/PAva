@@ -3,7 +3,7 @@ package ist.meic.pa;
 public class CommandClass {
 
 	public void commandAbort(){
-		System.out.println("sup bitches");
+		System.out.println("aborted");
 	}
 	
 	public void commandInfo(){
@@ -18,7 +18,7 @@ public class CommandClass {
 		//TODO
 	}
 	public void commandGet(String s){
-		System.out.println("sup niggas" + s);
+		System.out.println("get" + s);
 	}
 	public void commandSet(String s,Object o){
 		//TODO

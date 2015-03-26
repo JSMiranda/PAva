@@ -19,7 +19,7 @@ public class CommandClass {
 	}
 
 	protected void commandGet(String s) {
-		System.out.println("sup niggas" + s);
+		System.out.println("sup " + s);
 	}
 
 	protected void commandSet(String s, Object o) {

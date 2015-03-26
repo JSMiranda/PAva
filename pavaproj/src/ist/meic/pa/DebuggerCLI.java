@@ -1,6 +1,7 @@
 package ist.meic.pa;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,7 +9,7 @@ import javassist.*;
 
 public final class DebuggerCLI {
 
-	private static ClassPool pool = ClassPool.getDefault();
+	private static ClassPool pool;
 	static Throwable _t;
 
 	public static void main(String[] args) throws Throwable {
@@ -22,37 +23,14 @@ public final class DebuggerCLI {
 	public static void InjectCode(String[] args) {
 		try {
 
-			Loader javaLoader = new Loader(pool);
 			Translator translator = new DebugTranslator();
-			javaLoader.addTranslator(pool, translator);
+			pool = ClassPool.getDefault();
+			Loader classLoader = new Loader();
+			classLoader.addTranslator(pool, translator);
 			String[] restArgs = new String[args.length - 1];
-			Class<?> rtClass = javaLoader.loadClass(args[0]);
-			rtClass.getDeclaredMethod("main", new Class[] { String[].class }).invoke(null, new Object[] {restArgs});
-			// javaLoader.run(file);
-			
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			System.out.println("targetexception");
+			System.arraycopy(args, 1, restArgs, 0, restArgs.length);
+			classLoader.run(args[0], restArgs);
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 
@@ -63,21 +41,28 @@ public final class DebuggerCLI {
 	}
 
 	public static void execute(Object o, String methodName, Object[] args) {
-
 		Class[] v = new Class[args.length];
 		for (int i = 0; i < args.length; i++) {
 			v[i] = args[i].getClass();
 		}
 
 		try {
-			System.out.println("estou ca");
-			o.getClass().getMethod(methodName, v).invoke(args);
-			System.out.println("vou sair");
+			System.out.println("Calling method: " + methodName);
+//			System.out.println("Receiver object: " + o);
+//			System.out.println("Arguments: ");
+//			for(Object ob : args) {
+//				System.out.println(ob.getClass());
+//			}
+//			System.out.println("Methods: ");
+//			for(Method m : o.getClass().getDeclaredMethods()) {
+//				System.out.println(m);
+//			}
+			o.getClass().getMethod(methodName, v).invoke(o, args);
+			System.out.println("Executed method: " + methodName);
 		} catch (Exception e) {
 			e.printStackTrace();
 			// CheckInput(e);
 		}
-
 	}
 
 	public static void CheckInput(Throwable t) {
