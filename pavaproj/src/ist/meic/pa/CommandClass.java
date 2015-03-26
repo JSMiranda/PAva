@@ -10,10 +10,6 @@ public class CommandClass {
 		// TODO
 	}
 
-	protected void commandThrow() {
-	  //  throw t;
-	}
-
 	protected void commandReturn(Object o) {
 		// TODO
 	}
