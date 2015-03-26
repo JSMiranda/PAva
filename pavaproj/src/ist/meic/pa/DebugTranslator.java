@@ -15,17 +15,16 @@ public class DebugTranslator implements Translator {
 
 	}
 
-	private void modifyMethods(CtClass ctClass) throws CannotCompileException {
+	private void modifyMethods(final CtClass ctClass) throws CannotCompileException {
 		for (CtMethod cm : ctClass.getDeclaredMethods()) {
-			if(!ctClass.getName().equals("ist.meic.pa.CommandClass")){
-					cm.instrument(new ExprEditor() {
-						public void edit(MethodCall m) throws CannotCompileException {
-						        System.out.println(m.getMethodName());
-								m.replace("{ist.meic.pa.DebuggerCli.test(); $_ = $proceed($$);}");
-						        //m.replace("{ist.meic.pa.CommandClass.execute($0, \""+ m.getMethodName()+"\", $args);$_ = $proceed($$);}");
-						}
-					});
-			}
+			cm.instrument(new ExprEditor() {
+				public void edit(MethodCall m) throws CannotCompileException {
+					if (!ctClass.getName().equals("ist.meic.pa.DebuggerCLI")) {
+						m.replace("{ist.meic.pa.DebuggerCLI.test(); $_ = $proceed($$);}");
+						//m.replace("{ist.meic.pa.DebuggerCLI.execute($0, \""+ m.getMethodName()+"\", $args);$_ = $proceed($$);}");
+					}
+				}
+			});
 		}
 	}
 

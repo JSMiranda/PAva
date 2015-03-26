@@ -19,15 +19,15 @@ public final class DebuggerCLI {
 			InjectCode(args);
 	}
 
-	public static void InjectCode(String[] file) {
+	public static void InjectCode(String[] args) {
 		try {
 
 			Loader javaLoader = new Loader(pool);
 			Translator translator = new DebugTranslator();
 			javaLoader.addTranslator(pool, translator);
-
-			Class<?> rtClass = javaLoader.loadClass("test.Example");
-			rtClass.getDeclaredMethod("main", new Class[] { String[].class }).invoke(null, new Object[] { file });
+			String[] restArgs = new String[args.length - 1];
+			Class<?> rtClass = javaLoader.loadClass(args[0]);
+			rtClass.getDeclaredMethod("main", new Class[] { String[].class }).invoke(null, new Object[] {restArgs});
 			// javaLoader.run(file);
 			
 		} catch (IllegalAccessException e) {
@@ -53,12 +53,13 @@ public final class DebuggerCLI {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			System.out.println("targetexception");
+			e.printStackTrace();
 		}
 
 	}
 
 	public static void test() {
-		System.out.println("estou ca");
+		System.out.println("teste");
 	}
 
 	public static void execute(Object o, String methodName, Object[] args) {
@@ -69,7 +70,7 @@ public final class DebuggerCLI {
 		}
 
 		try {
-			System.out.println("estou caa");
+			System.out.println("estou ca");
 			o.getClass().getMethod(methodName, v).invoke(args);
 			System.out.println("vou sair");
 		} catch (Exception e) {
