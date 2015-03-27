@@ -41,19 +41,22 @@ public class CallStack {
 	@Override
 	public String toString() {
 		String s = "";
-		
-		for(Call c : st) {
-			s += c.method.toString().split("[ \\(]")[2];
+
+		for (Call c : st) {
+			String[] split = c.method.toString().split("[ \\(]");
+			s += split[split.length - 2];
 			s += "(";
-			for(Object arg : c.arguments) {
+			for (Object arg : c.arguments) {
 				s += arg + ",";
 			}
-			s = s.substring(0, s.length() - 1);
+			if (c.arguments.length > 0) {
+				s = s.substring(0, s.length() - 1);
+			}
 			s += ")";
 			s += "\n";
 		}
 		s = s.substring(0, s.length() - 1);
-		
+
 		return s;
 	}
 
