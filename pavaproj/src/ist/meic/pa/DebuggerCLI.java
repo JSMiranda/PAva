@@ -1,22 +1,18 @@
 package ist.meic.pa;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.Loader;
-import javassist.NotFoundException;
 import javassist.Translator;
 
 public final class DebuggerCLI {
 	public static boolean retrying; // TODO: check a better way
 	public static boolean reading; // TODO: check a better way
 	public static Object returnObject; // TODO: check a better way
-	public static Class<?> returnType; // TODO: check a better way
-	public static CallStack st = new CallStack(); // TODO: check a better way
+	public static CallStack callStack = new CallStack(); // TODO: check a better way
 
 	private static ClassPool pool = ClassPool.getDefault();
 	static Throwable _t;
@@ -40,31 +36,7 @@ public final class DebuggerCLI {
 			Class<?> rtClass = javaLoader.loadClass(args[0]);
 			rtClass.getDeclaredMethod("main", new Class[] { String[].class })
 					.invoke(null, new Object[] { restArgs });
-			// javaLoader.run(file);
-
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			System.out.println("targetexception");
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -78,51 +50,41 @@ public final class DebuggerCLI {
 			Object[] args) throws Throwable {
 		
 		retrying = false;
-		returnType = null;
 		returnObject = null;
 		do {
 			try {
 				Class<?> originalClass = Class.forName(className);
-				Class<?>[] v = new Class<?>[args.length];
+				Class<?>[] argsClasses = new Class<?>[args.length];
 				for (int i = 0; i < args.length; i++) {
-					v[i] = args[i].getClass();
-					if (v[i].getName().equals("java.lang.Byte"))
-						v[i] = byte.class;
-					if (v[i].getName().equals("java.lang.Short"))
-						v[i] = short.class;
-					if (v[i].getName().equals("java.lang.Integer"))
-						v[i] = int.class;
-					if (v[i].getName().equals("java.lang.Long"))
-						v[i] = long.class;
-					if (v[i].getName().equals("java.lang.Float"))
-						v[i] = float.class;
-					if (v[i].getName().equals("java.lang.Double"))
-						v[i] = double.class;
-					if (v[i].getName().equals("java.lang.Character"))
-						v[i] = char.class;
-					if (v[i].getName().equals("java.lang.Boolean"))
-						v[i] = boolean.class;
+					argsClasses[i] = args[i].getClass();
+					if (argsClasses[i].getName().equals("java.lang.Byte"))
+						argsClasses[i] = byte.class;
+					if (argsClasses[i].getName().equals("java.lang.Short"))
+						argsClasses[i] = short.class;
+					if (argsClasses[i].getName().equals("java.lang.Integer"))
+						argsClasses[i] = int.class;
+					if (argsClasses[i].getName().equals("java.lang.Long"))
+						argsClasses[i] = long.class;
+					if (argsClasses[i].getName().equals("java.lang.Float"))
+						argsClasses[i] = float.class;
+					if (argsClasses[i].getName().equals("java.lang.Double"))
+						argsClasses[i] = double.class;
+					if (argsClasses[i].getName().equals("java.lang.Character"))
+						argsClasses[i] = char.class;
+					if (argsClasses[i].getName().equals("java.lang.Boolean"))
+						argsClasses[i] = boolean.class;
 				}
 
-				// System.out.println("Calling method: " + methodName);
-				Method m = originalClass.getMethod(methodName, v);
+				Method m = originalClass.getMethod(methodName, argsClasses);
 				m.setAccessible(true);
-				returnType = m.getReturnType();
-				System.out.println("woot " + methodName + " " + returnType);
-				st.push(m, o);
+				callStack.push(m, o, args);
 				returnObject = m.invoke(originalClass.cast(o), args);
-				st.pop();
-				System.out.println("Executed method: " + methodName);
+				callStack.pop();
 			} catch (Exception e) {
-				// System.out.println("upsi");
-				// e.printStackTrace();
-				//if(e.getCause().getClass().equals(NullPointerException.class))
-				//	e.printStackTrace();
 				System.out.println(e.getCause());
 				CheckInput(e.getCause());
 			}
 		} while (retrying);
-		System.out.println("Will I crash? " + methodName);
 		return returnObject;
 	}
 
@@ -141,40 +103,31 @@ public final class DebuggerCLI {
 			for (int i = 1; i < tokens.length; i++) {
 				arguments.add(tokens[i]);
 			}
-			// CommandClass.class.getMethod(tokens[0]).invoke(commandC, "oi");
 			switch (tokens[0]) {
 
 			case "Abort":
 				commandC.commandAbort();
 				break;
-
 			case "Info":
 				commandC.commandInfo();
 				break;
-
 			case "Throw":
 				throw _t;
-
 			case "Return":
 				commandC.commandReturn(tokens[1]);
 				break;
-
 			case "Get":
 				commandC.commandGet(tokens[1]);
 				break;
-
 			case "Set":
 				commandC.commandSet(tokens[1], tokens[2]);
 				break;
-
 			case "Retry":
 				commandC.commandRetry();
 				break;
-
 			default:
-				System.out.println("Syke thats the wrong command");
+				System.out.println("Invalid command");
 				break;
-
 			}
 		}
 	}
