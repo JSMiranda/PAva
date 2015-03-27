@@ -10,20 +10,31 @@ public class CommandClass {
 	}
 
 	protected void commandInfo() {
-		System.out.println("Called Object:"
-				+ DebuggerCLI.callStack.getCurrentReceiver());
+		Object receiver = DebuggerCLI.callStack.getCurrentReceiver();
+		System.out
+				.println("Called Object: "
+						+ ((receiver == null) ? "(This is a static method)"
+								: receiver));
 		System.out.println(constructFieldString());
 		System.out.println("Call stack:");
 		System.out.println(DebuggerCLI.callStack);
 	}
 
 	private String constructFieldString() {
-		String fieldsStr = "\tFields:";
-		for (Field f : DebuggerCLI.callStack.getCurrentReceiver().getClass()
-				.getDeclaredFields()) {
-			fieldsStr += f.getName() + ",";
+		String fieldsStr = "       Fields: ";
+		
+		if (DebuggerCLI.callStack.getCurrentMethod().getDeclaringClass()
+				.getDeclaredFields().length == 0) {
+			fieldsStr += "(This class has no fields)";
+		} else {
+			for (Field f : DebuggerCLI.callStack.getCurrentMethod()
+					.getDeclaringClass().getDeclaredFields()) {
+				fieldsStr += f.getName() + ",";
+			}
+			fieldsStr = fieldsStr.substring(0, fieldsStr.length() - 1);
 		}
-		return fieldsStr.substring(0, fieldsStr.length()-1);
+		
+		return fieldsStr;
 	}
 
 	protected void commandReturn(String s) {
