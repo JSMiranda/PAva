@@ -16,6 +16,7 @@ public final class DebuggerCLI {
 	public static boolean reading; // TODO: check a better way
 	public static Object returnObject; // TODO: check a better way
 	public static Class<?> returnType; // TODO: check a better way
+	public static CallStack st = new CallStack(); // TODO: check a better way
 
 	private static ClassPool pool = ClassPool.getDefault();
 	static Throwable _t;
@@ -108,7 +109,9 @@ public final class DebuggerCLI {
 				m.setAccessible(true);
 				returnType = m.getReturnType();
 				System.out.println("woot " + methodName + " " + returnType);
+				st.push(m, o);
 				returnObject = m.invoke(originalClass.cast(o), args);
+				st.pop();
 				System.out.println("Executed method: " + methodName);
 			} catch (Exception e) {
 				// System.out.println("upsi");

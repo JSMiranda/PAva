@@ -12,15 +12,13 @@ public class CommandClass {
 	}
 
 	protected void commandReturn(String s) {
-		// TODO
 		DebuggerCLI.reading = false;
-
-		System.out.println("Class: " + DebuggerCLI.returnType);
+		DebuggerCLI.returnType = DebuggerCLI.st.getCurrentMethod().getReturnType();
 		
-		if(DebuggerCLI.returnType.equals(Integer.class)) {
+		if(DebuggerCLI.returnType.equals(int.class)) {
 			DebuggerCLI.returnObject = Integer.parseInt(s);
 		}
-		if(DebuggerCLI.returnType.equals(Double.class)) {
+		if(DebuggerCLI.returnType.equals(double.class)) {
 			DebuggerCLI.returnObject = Double.parseDouble(s);
 		}
 		// TODO: other types ...
