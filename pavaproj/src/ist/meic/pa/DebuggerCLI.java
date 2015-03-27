@@ -79,12 +79,12 @@ public final class DebuggerCLI {
 				m.setAccessible(true);
 				callStack.push(m, o, args);
 				returnObject = m.invoke(originalClass.cast(o), args);
-				callStack.pop();
 			} catch (Exception e) {
 				System.out.println(e.getCause());
 				CheckInput(e.getCause());
 			}
 		} while (retrying);
+		callStack.pop();
 		return returnObject;
 	}
 

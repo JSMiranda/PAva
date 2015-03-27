@@ -13,7 +13,7 @@ public class DebugTranslator implements Translator {
 		String first = split[0];
 		String last = split[split.length - 1];
 		if (!first.equals("javassist") && !last.equals("DebuggerCLI")
-				&& !last.equals("CommandClass") && !last.equals("CallStack")) {
+				&& !last.equals("CommandClass") && !last.contains("CallStack")) {
 			CtClass ctClass = pool.get(className);
 			modifyMethods(ctClass);
 		}
