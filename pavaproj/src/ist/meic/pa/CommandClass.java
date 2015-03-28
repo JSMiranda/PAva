@@ -22,7 +22,7 @@ public class CommandClass {
 
 	private String constructFieldString() {
 		String fieldsStr = "       Fields: ";
-		
+
 		if (DebuggerCLI.callStack.getCurrentMethod().getDeclaringClass()
 				.getDeclaredFields().length == 0) {
 			fieldsStr += "(This class has no fields)";
@@ -33,7 +33,7 @@ public class CommandClass {
 			}
 			fieldsStr = fieldsStr.substring(0, fieldsStr.length() - 1);
 		}
-		
+
 		return fieldsStr;
 	}
 
@@ -59,17 +59,62 @@ public class CommandClass {
 		} else if (returnType.equals(boolean.class)) {
 			DebuggerCLI.returnObject = Boolean.parseBoolean(s);
 		}
-		
+
 	}
 
 	protected void commandGet(String s) {
-		// TODO
-		System.out.println("....... Get cenas");
+		try {
+			Field f = DebuggerCLI.callStack.getCurrentMethod().getDeclaringClass().getDeclaredField(s);
+			f.setAccessible(true);
+			System.out.println(f.get(DebuggerCLI.callStack.getCurrentReceiver()));
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			System.out.println("No such Field. Try again.");
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	protected void commandSet(String s, Object o) {
-		// TODO
-		System.out.println("....... Set cenas");
+	protected void commandSet(String s, String value) {
+		try {
+			Field f = DebuggerCLI.callStack.getCurrentMethod().getDeclaringClass().getDeclaredField(s);
+			f.setAccessible(true);
+			if (f.getType().equals(byte.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Byte.parseByte(value));
+			} else if (f.getType().equals(short.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Short.parseShort(value));
+			} else if (f.getType().equals(int.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Integer.parseInt(value));
+			} else if (f.getType().equals(long.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Long.parseLong(value));
+			} else if (f.getType().equals(float.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Float.parseFloat(value));
+			} else if (f.getType().equals(double.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Double.parseDouble(value));
+			} else if (f.getType().equals(char.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), value.charAt(0));
+			} else if (f.getType().equals(boolean.class)) {
+				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Boolean.parseBoolean(value));
+			}
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void commandRetry() {
