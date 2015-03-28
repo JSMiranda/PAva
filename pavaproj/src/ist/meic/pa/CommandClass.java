@@ -59,6 +59,7 @@ public class CommandClass {
 		} else if (returnType.equals(boolean.class)) {
 			DebuggerCLI.returnObject = Boolean.parseBoolean(s);
 		}
+		
 	}
 
 	protected void commandGet(String s) {

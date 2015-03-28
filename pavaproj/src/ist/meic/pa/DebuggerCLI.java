@@ -1,5 +1,6 @@
 package ist.meic.pa;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -34,7 +35,7 @@ public final class DebuggerCLI {
 			String[] restArgs = new String[args.length - 1];
 			System.arraycopy(args, 1, restArgs, 0, restArgs.length);
 			Class<?> rtClass = javaLoader.loadClass(args[0]);
-			rtClass.getDeclaredMethod("main", new Class[] { String[].class })
+			rtClass.getDeclaredMethod("mainehajekd39203", new Class[] { String[].class })
 					.invoke(null, new Object[] { restArgs });
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -79,12 +80,12 @@ public final class DebuggerCLI {
 				m.setAccessible(true);
 				callStack.push(m, o, args);
 				returnObject = m.invoke(originalClass.cast(o), args);
-			} catch (Exception e) {
+			} catch (InvocationTargetException e) {
 				System.out.println(e.getCause());
 				CheckInput(e.getCause());
 			}
+			callStack.pop();
 		} while (retrying);
-		callStack.pop();
 		return returnObject;
 	}
 

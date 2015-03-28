@@ -22,6 +22,19 @@ public class DebugTranslator implements Translator {
 
 	private void modifyMethods(final CtClass ctClass)
 			throws CannotCompileException {
+		try {
+			CtMethod[] classMethods = ctClass.getDeclaredMethods("main");
+			if (classMethods.length > 0) {
+				CtMethod cm = classMethods[0];
+				CtMethod newcm = CtNewMethod.copy(cm, cm.getName() + "ehajekd39203", ctClass,
+						null);
+				ctClass.addMethod(newcm);
+				newcm.setBody("{" + cm.getName() + "($$);}");
+			}
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		}
+
 		for (CtMethod cm : ctClass.getDeclaredMethods()) {
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException {

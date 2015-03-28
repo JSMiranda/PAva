@@ -27,22 +27,23 @@ public class CallStack {
 	}
 
 	public Method getCurrentMethod() {
-		return st.firstElement().method;
+		return st.lastElement().method;
 	}
 
 	public Object getCurrentReceiver() {
-		return st.firstElement().receiver;
+		return st.lastElement().receiver;
 	}
 
 	public Object[] getCurrentArguments() {
-		return st.firstElement().arguments;
+		return st.lastElement().arguments;
 	}
 
 	@Override
 	public String toString() {
 		String s = "";
 
-		for (Call c : st) {
+		for (int i = st.size() - 1; i >= 0; i--) {
+			Call c = st.get(i);
 			String[] split = c.method.toString().split("[ \\(]");
 			s += split[split.length - 2];
 			s += "(";
