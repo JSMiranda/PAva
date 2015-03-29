@@ -25,7 +25,8 @@ public class CallStack {
 	/**
 	 * This method does not have a return
 	 * because we did not want to return a Call object.
-	 * We 
+	 * Instead, we defined getters to get more significant
+	 * objects.
 	 */
 	public void pop() {
 		st.pop();
