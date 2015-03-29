@@ -1,0 +1,46 @@
+<project name="pa" default="run" basedir=".">
+    <description>
+        build file for the first project of the advanced programming course
+    </description>
+  <!-- set global properties for this build -->
+  <property name="init" location="."/>
+  <property name="clean" location="build"/>
+  <property name="compile"  location="."/>
+  <property name="run"  location="build"/>
+
+  <target name="init">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="build"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- <javac srcdir="${src}" destdir="${build}"/> -->
+  	<javac srcdir="src" destdir="build" >
+		<classpath>
+      <pathelement location="lib/javassist.jar"/>
+    </classpath>
+	</javac>
+  </target>
+
+  <target name="run" depends="compile"
+        description="generate the distribution" >
+		<manifest file="build/MANIFEST.MF">
+  <attribute name="Main-Class"
+             value="ist.meic.pa.DebuggerCLI" />
+</manifest>
+		<jar destfile="debugger.jar"
+       basedir="build"
+	   manifest="build/MANIFEST.MF">
+	   <fileset dir="build" />
+	   <zipgroupfileset dir="lib" />
+  </jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="build"/>
+  </target>
+</project>
