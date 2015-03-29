@@ -44,8 +44,9 @@ public class CallStack {
 
 		for (int i = st.size() - 1; i >= 0; i--) {
 			Call c = st.get(i);
-			String[] split = c.method.toString().split("[ \\(]");
-			s += split[split.length - 2];
+			String className = c.method.getDeclaringClass().getName();
+			String methodName = c.method.getName();
+			s += className + "." + methodName;
 			s += "(";
 			for (Object arg : c.arguments) {
 				s += arg + ",";

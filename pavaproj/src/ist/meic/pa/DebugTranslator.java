@@ -9,15 +9,12 @@ public class DebugTranslator implements Translator {
 	@Override
 	public void onLoad(ClassPool pool, String className)
 			throws NotFoundException, CannotCompileException {
-		String[] split = className.split("\\.");
-		String first = split[0];
-		String last = split[split.length - 1];
-		if (!first.equals("javassist") && !last.equals("DebuggerCLI")
-				&& !last.equals("CommandClass") && !last.contains("CallStack")) {
+		final boolean isJavassistClass = className.contains("javassist");
+		final boolean isDebuggerClass = className.contains("ist.meic.pa");
+		if (!isJavassistClass && !isDebuggerClass) {
 			CtClass ctClass = pool.get(className);
 			modifyMethods(ctClass);
 		}
-
 	}
 
 	private void modifyMethods(final CtClass ctClass)
