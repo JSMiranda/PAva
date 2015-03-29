@@ -23,7 +23,7 @@ public class DebugTranslator implements Translator {
 			CtMethod[] classMethods = ctClass.getDeclaredMethods("main");
 			if (classMethods.length > 0) {
 				CtMethod cm = classMethods[0];
-				CtMethod newcm = CtNewMethod.copy(cm, cm.getName() + "ehajekd39203", ctClass,
+				CtMethod newcm = CtNewMethod.copy(cm, cm.getName() + "$$debugger", ctClass,
 						null);
 				ctClass.addMethod(newcm);
 				newcm.setBody("{" + cm.getName() + "($$);}");

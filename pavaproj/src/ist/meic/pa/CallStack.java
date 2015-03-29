@@ -22,6 +22,11 @@ public class CallStack {
 		st.push(new Call(method, receiver, arguments));
 	}
 
+	/**
+	 * This method does not have a return
+	 * because we did not want to return a Call object.
+	 * We 
+	 */
 	public void pop() {
 		st.pop();
 	}
@@ -49,7 +54,13 @@ public class CallStack {
 			s += className + "." + methodName;
 			s += "(";
 			for (Object arg : c.arguments) {
-				s += arg + ",";
+				if(methodName.equals("main")) {
+					for(String mainArg : (String [])arg) {
+						s += mainArg + ",";
+					}
+				} else {
+					s += arg + ",";
+				}
 			}
 			if (c.arguments.length > 0) {
 				s = s.substring(0, s.length() - 1);
