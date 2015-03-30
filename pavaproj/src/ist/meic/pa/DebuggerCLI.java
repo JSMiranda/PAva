@@ -44,14 +44,19 @@ public final class DebuggerCLI {
 		retrying = false;
 		returnObject = null;
 		throwing = false;
-		
+
 		try {
 			Class<?> originalClass = Class.forName(className);
 			Class<?>[] argsClasses = computeArgsClasses(args);
 			Method m = originalClass.getMethod(methodName, argsClasses);
 			m.setAccessible(true);
 			callStack.push(m, o, args);
-			returnObject = m.invoke(originalClass.cast(o), args);
+			try{
+				returnObject = m.invoke(originalClass.cast(o), args);
+			} catch(NullPointerException e){
+				callStack.pop();
+				throw e;
+			}
 			callStack.pop();
 			return returnObject;
 		} catch (InvocationTargetException e) {
@@ -66,28 +71,33 @@ public final class DebuggerCLI {
 				return returnObject;
 			}
 		}
+		
 	}
 
 	private static Class<?>[] computeArgsClasses(Object[] args) {
 		Class<?>[] argsClasses = new Class<?>[args.length];
 		for (int i = 0; i < args.length; i++) {
-			argsClasses[i] = args[i].getClass();
-			if (argsClasses[i].getName().equals("java.lang.Byte"))
-				argsClasses[i] = byte.class;
-			if (argsClasses[i].getName().equals("java.lang.Short"))
-				argsClasses[i] = short.class;
-			if (argsClasses[i].getName().equals("java.lang.Integer"))
-				argsClasses[i] = int.class;
-			if (argsClasses[i].getName().equals("java.lang.Long"))
-				argsClasses[i] = long.class;
-			if (argsClasses[i].getName().equals("java.lang.Float"))
-				argsClasses[i] = float.class;
-			if (argsClasses[i].getName().equals("java.lang.Double"))
-				argsClasses[i] = double.class;
-			if (argsClasses[i].getName().equals("java.lang.Character"))
-				argsClasses[i] = char.class;
-			if (argsClasses[i].getName().equals("java.lang.Boolean"))
-				argsClasses[i] = boolean.class;
+			if (args[i] == null) {
+				argsClasses[i] = Object.class;
+			} else {
+				argsClasses[i] = args[i].getClass();
+				if (argsClasses[i].getName().equals("java.lang.Byte"))
+					argsClasses[i] = byte.class;
+				if (argsClasses[i].getName().equals("java.lang.Short"))
+					argsClasses[i] = short.class;
+				if (argsClasses[i].getName().equals("java.lang.Integer"))
+					argsClasses[i] = int.class;
+				if (argsClasses[i].getName().equals("java.lang.Long"))
+					argsClasses[i] = long.class;
+				if (argsClasses[i].getName().equals("java.lang.Float"))
+					argsClasses[i] = float.class;
+				if (argsClasses[i].getName().equals("java.lang.Double"))
+					argsClasses[i] = double.class;
+				if (argsClasses[i].getName().equals("java.lang.Character"))
+					argsClasses[i] = char.class;
+				if (argsClasses[i].getName().equals("java.lang.Boolean"))
+					argsClasses[i] = boolean.class;
+			}
 		}
 		return argsClasses;
 	}
@@ -119,8 +129,7 @@ public final class DebuggerCLI {
 					+ tokens[0];
 			Command cmd;
 			try {
-				cmd = (Command) Class.forName(commandClassName)
-						.newInstance();
+				cmd = (Command) Class.forName(commandClassName).newInstance();
 				cmd.execute(arguments);
 			} catch (ClassNotFoundException e) {
 				System.err.println(tokens[0] + " : Inexisting command");
