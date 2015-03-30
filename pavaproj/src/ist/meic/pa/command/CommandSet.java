@@ -18,21 +18,22 @@ public final class CommandSet extends Command {
 		try {
 			Field f = DebuggerCLI.callStack.getCurrentMethod().getDeclaringClass().getDeclaredField(fieldName);
 			f.setAccessible(true);
-			if (f.getType().equals(byte.class)) {
+			final Class<?> type = f.getType();
+			if (type.equals(byte.class) || type.equals(Byte.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Byte.parseByte(value));
-			} else if (f.getType().equals(short.class)) {
+			} else if (type.equals(short.class) || type.equals(Short.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Short.parseShort(value));
-			} else if (f.getType().equals(int.class)) {
+			} else if (type.equals(int.class) || type.equals(Integer.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Integer.parseInt(value));
-			} else if (f.getType().equals(long.class)) {
+			} else if (type.equals(long.class) || type.equals(Long.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Long.parseLong(value));
-			} else if (f.getType().equals(float.class)) {
+			} else if (type.equals(float.class) || type.equals(Float.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Float.parseFloat(value));
-			} else if (f.getType().equals(double.class)) {
+			} else if (type.equals(double.class) || type.equals(Double.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Double.parseDouble(value));
-			} else if (f.getType().equals(char.class)) {
+			} else if (type.equals(char.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), value.charAt(0));
-			} else if (f.getType().equals(boolean.class)) {
+			} else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
 				f.set(DebuggerCLI.callStack.getCurrentReceiver(), Boolean.parseBoolean(value));
 			}
 		} catch (NoSuchFieldException e) {
