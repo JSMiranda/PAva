@@ -29,6 +29,7 @@
 		<manifest file="build/MANIFEST.MF">
   <attribute name="Main-Class"
              value="ist.meic.pa.DebuggerCLI" />
+  <attribute name="Class-Path" value="."/>
 </manifest>
 		<jar destfile="debugger.jar"
        basedir="build"
