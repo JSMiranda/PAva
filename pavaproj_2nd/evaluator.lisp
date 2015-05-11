@@ -1,3 +1,13 @@
+(defclass tensor ()
+    ((value :initarg :value
+            :accessor value)))
+
+
+
+
+
+
+
 (defun apl (expr)
     (eval expr))
 
