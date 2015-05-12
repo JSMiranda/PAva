@@ -65,8 +65,8 @@
 (defun interval (number)
 	(let ((res nil))
         (dotimes (count number)
-			(append res (list count)))
-		(make-tensor (res))))
+			(setf res (append res (list count))))
+		(make-tensor res)))
 
 #|
 
