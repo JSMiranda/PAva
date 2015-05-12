@@ -2,22 +2,12 @@
   ((lst 		:accessor tensor-lst
 				:initform '(1 2 3)
 				:initarg :lst)
-   (randomarg 	:accessor tensor-arg
+   (randomarg 	:accessor randomarg
 				:initform 10
 				:initarg :randomarg)))
 
 (defun make-tensor (lst)
   (make-instance 'tensor :lst lst))	
-
-(defgeneric lst (tensorlist))
-
-(defmethod lst ((tensorlist tensor))
-  (slot-value tensorlist 'lst))
-  
-(defgeneric (setf lst) (value tensorlist))
-
-(defmethod (setf lst) (value (tensorlist tensor))
-  (setf (slot-value tensorlist 'lst) value))
 
   
 (defun apl (expr)
@@ -28,23 +18,6 @@
 
 (defun v (&rest args)
     (make-tensor args))
-	
-(defun .- ((tensorlist tensor))
-				
-    (mapcar #'- (lst tensorlist)))
-
-
-
-
-
-(defun apl (expr)
-    (eval expr))
-
-(defun s (number)
-    number)
-
-(defun v (&rest args)
-    args)
     
 (defun .- (tensor)
     (mapcar #'- tensor))
@@ -88,6 +61,12 @@
     (if (listp tensor)
         (shape-aux (car tensor) (append (list (length tensor)) res-list))
         res-list))
+		
+(defun interval (number)
+	(let ((res nil))
+        (dotimes (count number)
+			(append res (list count)))
+		(make-tensor (res))))
 
 #|
 
