@@ -177,34 +177,13 @@
  
 
 ;;;;;;MONADIC & DYADIC;;;;;;
-(defgeneric .- (t1 t2))
-    
-(defmethod .- ((v1 vect) (v2 vect))
-    (dyadic #'- v1 v2))
-    
-(defmethod .- ((vv vect) (ss scalar))
-    (dyadic #'- vv ss))
+(defun .- (t1 &optional t2)
+	(if (null t2)
+		(monadic '- t1)
+		(dyadic #'- t1 t2)))
+		
 
-(defmethod .- ((ss scalar) (vv vect))
-    (dyadic #'- ss vv))
-
-(defmethod .- ((s1 scalar) (s2 scalar))
-    (dyadic #'- s1 s2))
-	
-	
-;; TODO: monadic com optional??
-
-(defgeneric ./ (t1 t2))
-    
-(defmethod ./ ((v1 vect) (v2 vect))
-    (dyadic #'/ v1 v2))
-    
-(defmethod ./ ((vv vect) (ss scalar))
-    (dyadic #'/ vv ss))
-
-(defmethod ./ ((ss scalar) (vv vect))
-    (dyadic #'/ ss vv))
-
-(defmethod ./ ((s1 scalar) (s2 scalar))
-    (dyadic #'/ s1 s2))
-;; TODO: monadic com optional??
+(defun ./ (t1 &optional t2)
+	(if (null t2)
+		(monadic '/ t1)
+		(dyadic #'/ t1 t2)))
