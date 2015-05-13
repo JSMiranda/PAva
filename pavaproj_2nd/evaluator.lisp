@@ -17,15 +17,12 @@
 
 (defun v (&rest args)
     (make-tensor args))
+
 	
 ;;;;;;MONADIC;;;;;;
-    
-(defun .- ((t1 tensor))
-    (mapcar #'- (lst t1)))
-    
-(defun ./ ((t1 tensor))
+#|(defun ./ ((t1 tensor))
     (mapcar #'/ (lst t1)))
-    
+ |#   
 (defun .! ((t1 tensor))
     (mapcar #'fact (lst t1)))
     
@@ -69,6 +66,41 @@
 			(setf res (append res (list (+ 1 count)))))
 		(make-tensor res)))
 
+;;;;MONADIC & DYADIC
+(defgeneric .- (tensor1 &optional tensor2))
+(defmethod .- ((tensor1 tensor) &optional tensor2)
+	(if (null tensor2)
+	(make-tensor(mapcar #'- (lst tensor1)))
+	(let ((res nil))
+	(cond 	((= (length (lst tensor1))(length (lst tensor2)))
+				(dotimes (count (length (lst tensor1)))
+					(setf res (append res (list (- (nth count (lst tensor1)) (nth count(lst tensor2))) )))))
+			((= 1 (length (lst tensor1)))
+				(dotimes (count (length (lst tensor2)))
+					(setf res (append res (list (- (nth 0 (lst tensor1)) (nth count (lst tensor2))))))))
+			((= 1 (length (lst tensor2)))
+				(dotimes (count (length (lst tensor1)))
+					(setf res (append res (list (- (nth count (lst tensor1)) (nth 0 (lst tensor2))))))))
+			(t (princ "tensors not of the same size")))
+	(make-tensor res))))
+	
+(defgeneric ./ (tensor1 &optional tensor2))
+(defmethod ./ ((tensor1 tensor) &optional tensor2)
+	(if (null tensor2)
+	(make-tensor(mapcar #'/ (lst tensor1)))
+	(let ((res nil))
+	(cond 	((= (length (lst tensor1))(length (lst tensor2)))
+				(dotimes (count (length (lst tensor1)))
+					(setf res (append res (list (/ (nth count (lst tensor1)) (nth count(lst tensor2))) )))))
+			((= 1 (length (lst tensor1)))
+				(dotimes (count (length (lst tensor2)))
+					(setf res (append res (list (/ (nth 0 (lst tensor1)) (nth count (lst tensor2))))))))
+			((= 1 (length (lst tensor2)))
+				(dotimes (count (length (lst tensor1)))
+					(setf res (append res (list (/ (nth count (lst tensor1)) (nth 0 (lst tensor2))))))))
+			(t (princ "tensors not of the same size")))
+	(make-tensor res))))
+
 ;;;;;;DYADIC;;;;;;;
 (defun .+ ((tensor1 tensor) (tensor2 tensor))
 	(let ((res nil))
@@ -84,19 +116,6 @@
 			(t (princ "tensors not of the same size")))
 	(make-tensor res)))
 
-(defun .- ((tensor1 tensor) (tensor2 tensor))
-	(let ((res nil))
-	(cond 	((= (length (lst tensor1))(length (lst tensor2)))
-				(dotimes (count (length (lst tensor1)))
-					(setf res (append res (list (- (nth count (lst tensor1)) (nth count(lst tensor2))) )))))
-			((= 1 (length (lst tensor1)))
-				(dotimes (count (length (lst tensor2)))
-					(setf res (append res (list (- (nth 0 (lst tensor1)) (nth count (lst tensor2))))))))
-			((= 1 (length (lst tensor2)))
-				(dotimes (count (length (lst tensor1)))
-					(setf res (append res (list (- (nth count (lst tensor1)) (nth 0 (lst tensor2))))))))
-			(t (princ "tensors not of the same size")))
-	(make-tensor res)))
 	
 (defun .* ((tensor1 tensor) (tensor2 tensor))
 	(let ((res nil))
@@ -109,20 +128,6 @@
 			((= 1 (length (lst tensor2)))
 				(dotimes (count (length (lst tensor1)))
 					(setf res (append res (list (* (nth 0 (lst tensor2)) (nth count (lst tensor1))))))))
-			(t (princ "tensors not of the same size")))
-	(make-tensor res)))
-	
-(defun ./ ((tensor1 tensor) (tensor2 tensor))
-	(let ((res nil))
-	(cond 	((= (length (lst tensor1))(length (lst tensor2)))
-				(dotimes (count (length (lst tensor1)))
-					(setf res (append res (list (/ (nth count (lst tensor1)) (nth count(lst tensor2))) )))))
-			((= 1 (length (lst tensor1)))
-				(dotimes (count (length (lst tensor2)))
-					(setf res (append res (list (/ (nth 0 (lst tensor1)) (nth count (lst tensor2))))))))
-			((= 1 (length (lst tensor2)))
-				(dotimes (count (length (lst tensor1)))
-					(setf res (append res (list (/ (nth count (lst tensor1)) (nth 0 (lst tensor2))))))))
 			(t (princ "tensors not of the same size")))
 	(make-tensor res)))
 	
