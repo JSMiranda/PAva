@@ -4,8 +4,16 @@
 
 (defclass scalar (tensor)())
 
+(defmethod print-object ((obj scalar) out)
+	
+    (format out "~s" (car (lst obj))))
+
 (defclass vect (tensor)())
 
+(defmethod print-object ((obj vect) out)
+	(dotimes (count (length (lst obj)))
+		(format out "~s " (nth count (lst obj)))))
+										 
 (defun make-tensor (lst)
   (make-instance 'tensor :lst lst))
   
