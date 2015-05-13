@@ -20,34 +20,38 @@
 
 (defun v (&rest args)
     (make-vect args))
-
-
+		
 ;;;;;;MONADIC;;;;;;
-(defun monadic (op arg)
-    (mapcar op (lst arg)))
+
+
+
+(defgeneric monadic (op arg))
+
+(defmethod monadic (op (vv vect))
+
+	(make-vect (mapcar op (lst vv))))
+
+(defmethod monadic (op(ss scalar))
+
+	(make-scalar (mapcar op (lst ss))))
+
+(defun .! (tensor)
+        (monadic 'fact tensor))
  
-(defgeneric .! (tens)
-    (:method ((tens tensor))
-        (monadic 'fact tens)))
+(defun .sin (tensor)
+    (monadic 'sin tensor))
  
-(defgeneric .sin (tens)
-    (:method ((tens tensor))
-        (monadic 'sin tens)))
+(defun .cos (tensor)
+    (monadic 'cos tensor))
  
-(defgeneric .cos (tens)
-    (:method ((tens tensor))
-        (monadic 'cos tens)))
- 
-(defgeneric .not (tens)
-    (:method ((tens tensor))
-        (monadic (lambda (val) (if (zerop val)
+(defun .not (tensor)
+      (monadic (lambda (val) (if (zerop val)
                               0
-                              1)) tens)))
+                              1)) tensor))
  
-(defgeneric shape (tens)
-    (:method ((tens tensor))
+(defun shape (tensor)
         (let ((res nil))
-             (make-vect (invert-first-and-second (shape-aux (lst tens) res))))))
+             (make-vect (invert-first-and-second (shape-aux (lst tensor) res)))))
 
 ;; Auxiliar functions
 (defun invert-first-and-second (list-to-invert)
@@ -68,6 +72,7 @@
       1
     (* n (fact(- n 1)))))
     
+	
 ;;;;;;DYADIC;;;;;;
 (defgeneric dyadic (op arg1 arg2))
 
@@ -90,6 +95,8 @@
                             
 (defmethod dyadic ((op function) (s1 scalar) (s2 scalar))
     (make-scalar (funcall op (car (lst s1)) (car (lst s2)))))
+
+;;;;;;;;;;;;;;;;;;;;;
 
 
 (defgeneric logical-dyadic (op arg1 arg2))
@@ -123,66 +130,51 @@
                      '(0))))
     
     
+;;;;;;;;;;;;;;
 
-(defgeneric .+ (t1 t2))
-    
-(defmethod .+ ((v1 vect) (v2 vect))
-    (dyadic #'+ v1 v2))
-    
-(defmethod .+ ((vv vect) (ss scalar))
-    (dyadic #'+ vv ss))
+(defun .+ (t1 t2)
+  (dyadic #'+ t1 t2))
 
-(defmethod .+ ((ss scalar) (vv vect))
-    (dyadic #'+ ss vv))
+(defun .* (t1 t2)
+ (dyadic #'* t1 t2))
 
-(defmethod .+ ((s1 scalar) (s2 scalar))
-    (dyadic #'+ s1 s2))
-    
-    
-(defgeneric .* (t1 t2))
-    
-(defmethod .* ((v1 vect) (v2 vect))
-    (dyadic #'* v1 v2))
-    
-(defmethod .* ((vv vect) (ss scalar))
-    (dyadic #'* vv ss))
+(defun .// (t1 t2)
+ (dyadic #'truncate t1 t2))
 
-(defmethod .* ((ss scalar) (vv vect))
-    (dyadic #'* ss vv))
+(defun .% (t1 t2)
+ (dyadic #'rem t1 t2))
 
-(defmethod .* ((s1 scalar) (s2 scalar))
-    (dyadic #'* s1 s2))
-    
-    
-(defgeneric .// (t1 t2))
-    
-(defmethod .// ((v1 vect) (v2 vect))
-    (dyadic #'truncate v1 v2))
-    
-(defmethod .// ((vv vect) (ss scalar))
-    (dyadic #'truncate vv ss))
+(defun .< (t1 t2)
+ (logical-dyadic #'< t1 t2))
 
-(defmethod .// ((ss scalar) (vv vect))
-    (dyadic #'truncate ss vv))
+(defun .> (t1 t2)
+ (logical-dyadic #'> t1 t2))
 
-(defmethod .// ((s1 scalar) (s2 scalar))
-    (dyadic #'truncate s1 s2))
-    
-    
-(defgeneric .% (t1 t2))
-    
-(defmethod .% ((v1 vect) (v2 vect))
-    (dyadic #'rem v1 v2))
-    
-(defmethod .% ((vv vect) (ss scalar))
-    (dyadic #'rem vv ss))
+(defun .<= (t1 t2)
+ (logical-dyadic #'<= t1 t2))
+ 
+(defun .>= (t1 t2)
+ (logical-dyadic #'>= t1 t2))
 
-(defmethod .% ((ss scalar) (vv vect))
-    (dyadic #'rem ss vv))
-
-(defmethod .% ((s1 scalar) (s2 scalar))
-    (dyadic #'rem s1 s2))
-
+ (defun .= (t1 t2)
+ (logical-dyadic #'eq t1 t2))
+ 
+ (defun .or (t1 t2)
+ (logical-dyadic (lambda (x y) (if (eq x 0) 
+									(if (eq y 0)
+									     nil
+										 t)
+									t)) t1 t2))
+									
+									
+(defun .and (t1 t2)
+ (logical-dyadic (lambda (x y) (cond ((eq x 0) nil)
+									((eq y 0) nil)
+									(t t))) t1 t2))
+										
+ 
+ 
+ 
 
 ;;;;;;MONADIC & DYADIC;;;;;;
 (defgeneric .- (t1 t2))
@@ -198,6 +190,8 @@
 
 (defmethod .- ((s1 scalar) (s2 scalar))
     (dyadic #'- s1 s2))
+	
+	
 ;; TODO: monadic com optional??
 
 (defgeneric ./ (t1 t2))
