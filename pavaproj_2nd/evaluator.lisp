@@ -192,10 +192,10 @@
 
 									
 (defun reshape (vvv tt)
-
-(let ((init (list '()))
+(let ((init (list '(1)))
 	  (res nil)
-	  (vv (lst vvv)))
+	  (vv (lst vvv))
+	  (columns 0))
 	  
     (dotimes (counteri (length vv))
 			(if (not(eq counteri 1))
@@ -206,17 +206,27 @@
 									
 							(dotimes (counterj (1-(nth counteri vv)))
 									(setf res (list res init))))
-						(setf init  res))))
+						(setf init  res)))
+						(setf columns (nth counteri vv)))
 						
-	(fill-list res tt)))
+	(fill-list res tt columns)))
 	
-(defun fill-list (ll tt)
+(defun fill-list (ll tt columns)
 	
-	
+	columns
 	)
 	
-							
-						
+		#|					
+		(defun fill-list (ll tt)
+	;(if (numberp (car ll))
+	;	(setf (car ll) 1)
+	
+	(dolist (item ll)
+		(if (numberp item)
+			(setf item 1)
+			(fill-list item tt))
+		ll))
+		|#				
 						
 										
  
