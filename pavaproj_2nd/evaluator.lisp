@@ -185,6 +185,39 @@
  (logical-dyadic (lambda (x y) (cond ((eq x 0) nil)
 									((eq y 0) nil)
 									(t t))) t1 t2))
+									
+									
+
+
+
+									
+(defun reshape (vvv tt)
+
+(let ((init (list '()))
+	  (res nil)
+	  (vv (lst vvv)))
+	  
+    (dotimes (counteri (length vv))
+			(if (not(eq counteri 1))
+				(progn
+						(if (eq counteri 0)
+							(dotimes (counterj (nth counteri vv))
+									(setf res (append res init)))
+									
+							(dotimes (counterj (1-(nth counteri vv)))
+									(setf res (list res init))))
+						(setf init  res))))
+						
+	(fill-list res tt)))
+	
+(defun fill-list (ll tt)
+	
+	
+	)
+	
+							
+						
+						
 										
  
  
