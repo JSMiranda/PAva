@@ -28,6 +28,13 @@
   
 (defun make-vect (lst)
   (make-instance 'vect :lst lst))
+  
+(defun create-vect-from-big-list (lst)
+     (make-vect (if (numberp (car lst))
+                    lst
+                    (let ((res nil))
+                         (mapcar (lambda (x) (setf res (append res (lst (make-vect x))))) lst)
+                         res))))
 
 (defun s (number)
      (make-scalar (list number)))
@@ -42,11 +49,9 @@
 (defgeneric monadic (op arg))
 
 (defmethod monadic (op (vv vect))
-
 	(make-vect (mapcar op (lst vv))))
 
-(defmethod monadic (op(ss scalar))
-
+(defmethod monadic (op (ss scalar))
 	(make-scalar (mapcar op (lst ss))))
 
 (defun .! (tensor)
@@ -64,8 +69,7 @@
                               1)) tensor))
  
 (defun shape (tensor)
-        (let ((res nil))
-             (make-vect (invert-first-and-second (shape-aux (lst tensor) res)))))
+    (make-vect (get-dimensions tensor)))
 
 ;; Auxiliar functions
 (defun invert-first-and-second (list-to-invert)
@@ -75,11 +79,14 @@
                 (list (first list-to-invert))
                 (if (> (length list-to-invert) 2) ;; Prevents accessing null cdr
                     (cddr list-to-invert)))))
-            
-(defun shape-aux (tensor res-list)
-    (if (listp tensor)
-        (shape-aux (car tensor) (append (list (length tensor)) res-list))
-        res-list))
+
+(defun get-dimensions (tensor)
+    (invert-first-and-second (list-dim (lst tensor))))
+                    
+(defun list-dim (a-list)
+    (if (numberp (car a-list))
+        (list (length a-list))
+        (append (list-dim (lst (car a-list))) (list (length a-list)))))
     
 (defun fact (n)
   (if (< n 2)
@@ -170,27 +177,23 @@
 (defun .>= (t1 t2)
  (logical-dyadic #'>= t1 t2))
 
- (defun .= (t1 t2)
+(defun .= (t1 t2)
  (logical-dyadic #'eq t1 t2))
  
- (defun .or (t1 t2)
+(defun .or (t1 t2)
  (logical-dyadic (lambda (x y) (if (eq x 0) 
-									(if (eq y 0)
-									     nil
-										 t)
-									t)) t1 t2))
+                    (if (eq y 0)
+                            nil
+                                t)
+                    t)) t1 t2))
 									
 									
 (defun .and (t1 t2)
  (logical-dyadic (lambda (x y) (cond ((eq x 0) nil)
-									((eq y 0) nil)
-									(t t))) t1 t2))
-									
-									
-
-
-
-									
+                    ((eq y 0) nil)
+                    (t t))) t1 t2))
+                    
+                    
 (defun reshape (vvv tt)
 (let ((init (list '(1)))
 	  (res nil)
@@ -212,8 +215,7 @@
 	(fill-list res tt columns)))
 	
 (defun fill-list (ll tt columns)
-	
-	columns
+	ll
 	)
 	
 		#|					
@@ -227,11 +229,7 @@
 			(fill-list item tt))
 		ll))
 		|#				
-						
-										
- 
- 
- 
+
 
 ;;;;;;MONADIC & DYADIC;;;;;;
 (defun .- (t1 &optional t2)
