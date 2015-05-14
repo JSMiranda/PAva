@@ -11,8 +11,19 @@
 (defclass vect (tensor)())
 
 (defmethod print-object ((obj vect) out)
-	(dotimes (count (length (lst obj)))
-		(format out "~s " (nth count (lst obj)))))
+    (let ((dim (calculate-dimensions obj)))
+    	(dotimes (count (length (lst obj)))
+            (format out "~s" (nth count (lst obj)))
+            (if (nth (1+ count) (lst obj))
+                (if (eq dim 1)
+                    (format out " ")
+                    (format out "~%"))
+                (format out "~%")))))
+
+(defun calculate-dimensions (vect)
+    (if (numberp (car (lst vect)))
+        1
+        (1+ (calculate-dimensions (car (lst vect))))))
 										 
 (defun make-tensor (lst)
   (make-instance 'tensor :lst lst))
