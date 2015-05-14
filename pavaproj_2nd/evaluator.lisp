@@ -5,20 +5,15 @@
 (defclass scalar (tensor)())
 
 (defmethod print-object ((obj scalar) out)
-	
     (format out "~s" (car (lst obj))))
 
 (defclass vect (tensor)())
 
 (defmethod print-object ((obj vect) out)
     (let ((dim (calculate-dimensions obj)))
-    	(dotimes (count (length (lst obj)))
-            (format out "~s" (nth count (lst obj)))
-            (if (nth (1+ count) (lst obj))
-                (if (eq dim 1)
-                    (format out " ")
-                    (format out "~%"))
-                (format out "~%")))))
+        (cond ((eq dim 1) (format out "~{~a~^ ~}" (lst obj)))
+              ((eq dim 2) (format out "~{~a~^~%~}" (lst obj)))
+              ((> dim 2)  (format out (concatenate 'string "~{~a~^~" (write-to-string dim) "%~}") (lst obj))))))
 
 (defun calculate-dimensions (vect)
     (if (numberp (car (lst vect)))
