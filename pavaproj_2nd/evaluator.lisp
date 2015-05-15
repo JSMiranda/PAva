@@ -1,3 +1,10 @@
+;;;;;;PAVA 2;;;;;;
+
+
+
+;;;;;;ClASS DEFENITIONS/FUNCTIONS;;;;;;
+
+
 (defclass tensor ()
   ((lst :accessor lst
 	:initarg :lst)))
@@ -14,12 +21,8 @@
         (cond ((eq dim 1) (format out "~{~a~^ ~}" (lst obj)))
               ((eq dim 2) (format out "~{~a~^~%~}" (lst obj)))
               ((> dim 2)  (format out (concatenate 'string "~{~a~^~" (write-to-string dim) "%~}") (lst obj))))))
+			  
 
-(defun calculate-dimensions (vect)
-    (if (numberp (car (lst vect)))
-        1
-        (1+ (calculate-dimensions (car (lst vect))))))
-										 
 (defun make-tensor (lst)
   (make-instance 'tensor :lst lst))
   
@@ -34,11 +37,14 @@
 
 (defun v (&rest args)
     (make-vect args))
-		
-;;;;;;MONADIC;;;;;;
 
 
+	
+	
+;;;;;;MONADIC FUNCTIONS;;;;;;
 
+
+;;;;;;TEMPLATES
 (defgeneric monadic (op arg))
 
 (defmethod monadic (op (vv vect))
@@ -48,6 +54,8 @@
 (defmethod monadic (op(ss scalar))
 
 	(make-scalar (mapcar op (lst ss))))
+;;;;;;
+
 
 (defun .! (tensor)
         (monadic 'fact tensor))
@@ -67,27 +75,24 @@
         (let ((res nil))
              (make-vect (invert-first-and-second (shape-aux (lst tensor) res)))))
 
-;; Auxiliar functions
-(defun invert-first-and-second (list-to-invert)
-    (if (< (length list-to-invert) 2)
-        list-to-invert
-        (append (list (second list-to-invert))
-                (list (first list-to-invert))
-                (if (> (length list-to-invert) 2) ;; Prevents accessing null cdr
-                    (cddr list-to-invert)))))
-            
+
 (defun shape-aux (tensor res-list)
     (if (listp tensor)
         (shape-aux (car tensor) (append (list (length tensor)) res-list))
         res-list))
     
-(defun fact (n)
-  (if (< n 2)
-      1
-    (* n (fact(- n 1)))))
-    
+ (defun interval (num)
+	(let ((res nil))
+	
+	(dotimes (count num)
+		(setf res (append res (list (+ count 1))))
+		)
+		(make-vect res)))
+		
 	
 ;;;;;;DYADIC;;;;;;
+
+;;;;;;TEMPLATES
 (defgeneric dyadic (op arg1 arg2))
 
 (defmethod dyadic ((op function) (v1 vect) (v2 vect))
@@ -109,9 +114,6 @@
                             
 (defmethod dyadic ((op function) (s1 scalar) (s2 scalar))
     (make-scalar (funcall op (car (lst s1)) (car (lst s2)))))
-
-;;;;;;;;;;;;;;;;;;;;;
-
 
 (defgeneric logical-dyadic (op arg1 arg2))
     
@@ -142,9 +144,14 @@
     (make-scalar (if (funcall op (car (lst s1)) (car (lst s2)))
                      '(1)
                      '(0))))
+					 
+;;;;;;
+
+
+
     
     
-;;;;;;;;;;;;;;
+;;;;;;DYATIC FUNCTIONS;;;;;;
 
 (defun .+ (t1 t2)
   (dyadic #'+ t1 t2))
@@ -189,7 +196,7 @@
 									
 
 
-
+#|
 									
 (defun reshape (vvv tt)
 (let ((init (list '(1)))
@@ -213,10 +220,10 @@
 	
 (defun fill-list (ll tt columns)
 	
-	columns
+	ll
 	)
 	
-		#|					
+							
 		(defun fill-list (ll tt)
 	;(if (numberp (car ll))
 	;	(setf (car ll) 1)
@@ -226,14 +233,85 @@
 			(setf item 1)
 			(fill-list item tt))
 		ll))
-		|#				
 						
-										
- 
- 
+						
+	|#		
+	
+ ;only for 1dim tensors
+ (defun catenate ( v1 v2)
+	  (make-vect (append (lst v1) (lst v2))))
+	  
+(defgeneric drop (v t))
+
+(defmethod drop ( (s scalar) (v vect))
+	(let (
+		(n (car(lst s)))
+		(res (lst v)))
+		
+	
+			
+	
+		(cond
+	
+			((< n 0)	(dotimes (count (* n (- 1)))
+				
+						(setf res (reverse (cdr (reverse res)))))
+			)
+					
+			((> n 0) (dotimes (count n )
+				
+						(setf res (cdr res)))
+			)
+		
+			(t res))
+		(make-vect res)
+	)		
+)
+
+#|v
+(defmethod drop (( v vector) (v vect))
+	;TODO
+)
+
+TODO
+|#	  
  
 
-;;;;;;MONADIC & DYADIC;;;;;;
+
+;only for 1dim
+(defun member? (tensor1 tensor2)
+(let (
+		(l1 (lst tensor1))
+		(l2 (lst tensor2))
+		(res (lst tensor1)))
+
+		(dotimes (count (length l1))
+			(if (find (nth count l1) l2)
+				(setf (nth count res) 1)
+				(setf (nth count res) 0))
+	)
+	(make-vect res))
+
+)
+
+
+;only for 1dim
+(defun select( booltensor tensor)
+
+		   
+	(make-vect (select-rec (list)(lst booltensor) (lst tensor))))
+	
+	(defun select-rec (res boolt tl)
+	
+		(if (not boolt)
+			res
+			(if (eq (car boolt) 1)
+				(select-rec  (append res (list(car tl))) (cdr boolt) (cdr tl))
+				(select-rec res (cdr boolt) (cdr tl))			
+			))
+				)
+
+;;;;;;MONADIC & DYADIC FUNCTIONS;;;;;;
 (defun .- (t1 &optional t2)
 	(if (null t2)
 		(monadic '- t1)
@@ -244,3 +322,56 @@
 	(if (null t2)
 		(monadic '/ t1)
 		(dyadic #'/ t1 t2)))
+		
+		
+;;;;;;MONADIC OPERATORS;;;;;;
+;fold Accepts a function and returns another function that, given a vector, computes
+;the application of the function to sucessive elements of the vector.
+
+;scan Similar to fold but using increasingly large subsets of the elements of the
+;vector, starting from a subset containing just the first element up to a
+;subset containing all elements.
+
+;outer-product Accepts a function and returns another functions that, given
+;two tensors, returns a new tensor with the result of applying the function
+;to every combination of values from the first and second tensors.
+
+
+;(defun fold ())
+
+;(defun scan ())
+
+;(defun outer-product())
+
+
+
+;;;;;;DYADIC OPERATORS;;;;;;
+
+;inner-product Accepts two functions and returns a function that, given two
+;tensors, returns a new tensor computed according to the rules of the algebraic
+;inner product but replacing the algebraic sum and product with
+;the first and second functions.
+
+;(defun inner-product ())
+
+	
+;;;;;;AUXILIAR FUNCTIONS;;;;;;
+
+(defun calculate-dimensions (vect)
+    (if (numberp (car (lst vect)))
+        1
+        (1+ (calculate-dimensions (car (lst vect))))))
+									
+									
+(defun invert-first-and-second (list-to-invert)
+    (if (< (length list-to-invert) 2)
+        list-to-invert
+        (append (list (second list-to-invert))
+                (list (first list-to-invert))
+                (if (> (length list-to-invert) 2) ;; Prevents accessing null cdr
+                    (cddr list-to-invert)))))
+            
+(defun fact (n)
+  (if (< n 2)
+      1
+    (* n (fact(- n 1)))))
