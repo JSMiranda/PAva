@@ -56,14 +56,6 @@
 
 (defmethod monadic (op (vv vect))
         (reshape (shape vv) (make-vect (mapcar op (vect-to-list vv)))))
-#|
-    (if (numberp (car (lst vv)))
-        (make-vect (mapcar op (lst vv)))
-        (dolist (item (lst vv))
-                (monadic op (lst item)))))
-|#
-
-
 
 (defmethod monadic (op (ss scalar))
 	(make-scalar (mapcar op (lst ss))))
@@ -108,48 +100,62 @@
 
 (defmethod dyadic ((op function) (v1 vect) (v2 vect))
     (if (eq (length (lst v1)) (length (lst v2)))
-        (let ((res nil)) (progn (dotimes (count (length (lst v1)))
-                                         (setf res (append res (list (funcall op (nth count (lst v1)) (nth count(lst v2)))))))
-                                (make-vect res)))
+        (let ((res nil)
+              (l1 (vect-to-list v1))
+              (l2 (vect-to-list v2)))
+             (dotimes (count (length l1))
+                      (setf res (append res (list (funcall op (nth count l1) (nth count l2))))))
+             (reshape (shape v1) (make-vect res)))
         (princ "error: tensors not of the same size")))
 
 (defmethod dyadic ((op function) (vv vect) (ss scalar))
-    (let ((res nil)) (progn (dotimes (count (length (lst vv)))
-                                     (setf res (append res (list (funcall op (nth count (lst vv)) (nth 0 (lst ss)))))))
-                            (make-vect res))))
+    (let ((res nil)
+          (ll (vect-to-list vv)))
+         (dotimes (count (length ll))
+                  (setf res (append res (list (funcall op (nth count ll) (nth 0 (lst ss)))))))
+         (reshape (shape vv) (make-vect res))))
 
 (defmethod dyadic ((op function) (ss scalar) (vv vect))
-    (let ((res nil)) (progn (dotimes (count (length (lst vv)))
-                                     (setf res (append res (list (funcall op (nth 0 (lst ss)) (nth count (lst vv)))))))
-                            (make-vect res))))
+    (let ((res nil)
+          (ll (vect-to-list vv)))
+         (dotimes (count (length ll))
+                  (setf res (append res (list (funcall op (nth 0 (lst ss)) (nth count ll))))))
+         (reshape (shape vv) (make-vect res))))
                             
 (defmethod dyadic ((op function) (s1 scalar) (s2 scalar))
-    (make-scalar (funcall op (car (lst s1)) (car (lst s2)))))
+    (make-scalar (list (funcall op (car (lst s1)) (car (lst s2))))))
 
 (defgeneric logical-dyadic (op arg1 arg2))
-    
+
 (defmethod logical-dyadic ((op function) (v1 vect) (v2 vect))
     (if (eq (length (lst v1)) (length (lst v2)))
-        (let ((res nil)) (progn (dotimes (count (length (lst v1)))
-                                         (if (funcall op (nth count (lst v1)) (nth count(lst v2)))
-                                             (setf res (append res (list 1)))
-                                             (setf res (append res (list 0)))))
-                                (make-vect res)))
+        (let ((res nil)
+              (l1 (vect-to-list v1))
+              (l2 (vect-to-list v2)))
+             (dotimes (count (length l1))
+                      (if (funcall op (nth count l1) (nth count l2))
+                          (setf res (append res (list 1)))
+                          (setf res (append res (list 0)))))
+             (reshape (shape v1) (make-vect res)))
         (princ "error: tensors not of the same size")))
 
 (defmethod logical-dyadic ((op function) (vv vect) (ss scalar))
-    (let ((res nil)) (progn (dotimes (count (length (lst vv)))
-                                     (if (funcall op (nth count (lst vv))(nth 0 (lst ss)))
-                                         (setf res (append res (list 1)))
-                                         (setf res (append res (list 0)))))
-                            (make-vect res))))
+    (let ((res nil)
+          (ll (vect-to-list vv)))
+         (dotimes (count (length ll))
+                  (if (funcall op (nth count ll) (nth 0 (lst ss)))
+                      (setf res (append res (list 1)))
+                      (setf res (append res (list 0)))))
+         (reshape (shape vv) (make-vect res))))
 
 (defmethod logical-dyadic ((op function) (ss scalar) (vv vect))
-    (let ((res nil)) (progn (dotimes (count (length (lst vv)))
-                                     (if (funcall op (nth 0 (lst ss)) (nth count (lst vv)))
+    (let ((res nil)
+          (ll (vect-to-list vv)))
+         (dotimes (count (length ll))
+                  (if (funcall op (nth 0 (lst ss)) (nth count ll))
                                          (setf res (append res (list 1)))
                                          (setf res (append res (list 0)))))
-                            (make-vect res))))
+         (reshape (shape vv) (make-vect res))))
                             
 (defmethod logical-dyadic ((op function) (s1 scalar) (s2 scalar))
     (make-scalar (if (funcall op (car (lst s1)) (car (lst s2)))
@@ -345,7 +351,14 @@ TODO
 ;to every combination of values from the first and second tensors.
 
 
-;(defun fold ())
+(defun fold (func)
+    (lambda (vv) (let* ((ll (lst vv))
+                       (res (funcall func (s (first ll)) (s (second ll)))))
+                      (setf ll (cddr ll))
+                      (dolist (item ll)
+                              (setf res (funcall func res (s item))))
+                 res)))
+
 
 ;(defun scan ())
 
