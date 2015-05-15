@@ -31,6 +31,13 @@
   
 (defun make-vect (lst)
   (make-instance 'vect :lst lst))
+  
+(defun create-vect-from-big-list (lst)
+     (make-vect (if (numberp (car lst))
+                    lst
+                    (let ((res nil))
+                         (mapcar (lambda (x) (setf res (append res (lst (make-vect x))))) lst)
+                         res))))
 
 (defun s (number)
      (make-scalar (list number)))
@@ -48,11 +55,9 @@
 (defgeneric monadic (op arg))
 
 (defmethod monadic (op (vv vect))
-
 	(make-vect (mapcar op (lst vv))))
 
-(defmethod monadic (op(ss scalar))
-
+(defmethod monadic (op (ss scalar))
 	(make-scalar (mapcar op (lst ss))))
 ;;;;;;
 
@@ -72,9 +77,7 @@
                               1)) tensor))
  
 (defun shape (tensor)
-        (let ((res nil))
-             (make-vect (invert-first-and-second (shape-aux (lst tensor) res)))))
-
+    (make-vect (get-dimensions tensor)))
 
 (defun shape-aux (tensor res-list)
     (if (listp tensor)
@@ -151,7 +154,7 @@
 
     
     
-;;;;;;DYATIC FUNCTIONS;;;;;;
+;;;;;;DYADIC FUNCTIONS;;;;;;
 
 (defun .+ (t1 t2)
   (dyadic #'+ t1 t2))
@@ -177,66 +180,27 @@
 (defun .>= (t1 t2)
  (logical-dyadic #'>= t1 t2))
 
- (defun .= (t1 t2)
+(defun .= (t1 t2)
  (logical-dyadic #'eq t1 t2))
  
- (defun .or (t1 t2)
+(defun .or (t1 t2)
  (logical-dyadic (lambda (x y) (if (eq x 0) 
-									(if (eq y 0)
-									     nil
-										 t)
-									t)) t1 t2))
+                    (if (eq y 0)
+                            nil
+                                t)
+                    t)) t1 t2))
 									
 									
 (defun .and (t1 t2)
  (logical-dyadic (lambda (x y) (cond ((eq x 0) nil)
-									((eq y 0) nil)
-									(t t))) t1 t2))
-									
-									
+                    ((eq y 0) nil)
+                    (t t))) t1 t2))
+					
+					
+					
+					
+					
 
-
-#|
-									
-(defun reshape (vvv tt)
-(let ((init (list '(1)))
-	  (res nil)
-	  (vv (lst vvv))
-	  (columns 0))
-	  
-    (dotimes (counteri (length vv))
-			(if (not(eq counteri 1))
-				(progn
-						(if (eq counteri 0)
-							(dotimes (counterj (nth counteri vv))
-									(setf res (append res init)))
-									
-							(dotimes (counterj (1-(nth counteri vv)))
-									(setf res (list res init))))
-						(setf init  res)))
-						(setf columns (nth counteri vv)))
-						
-	(fill-list res tt columns)))
-	
-(defun fill-list (ll tt columns)
-	
-	ll
-	)
-	
-							
-		(defun fill-list (ll tt)
-	;(if (numberp (car ll))
-	;	(setf (car ll) 1)
-	
-	(dolist (item ll)
-		(if (numberp item)
-			(setf item 1)
-			(fill-list item tt))
-		ll))
-						
-						
-	|#		
-	
  ;only for 1dim tensors
  (defun catenate ( v1 v2)
 	  (make-vect (append (lst v1) (lst v2))))
@@ -274,8 +238,7 @@
 )
 
 TODO
-|#	  
- 
+|#
 
 
 ;only for 1dim
@@ -370,6 +333,14 @@ TODO
                 (list (first list-to-invert))
                 (if (> (length list-to-invert) 2) ;; Prevents accessing null cdr
                     (cddr list-to-invert)))))
+
+(defun get-dimensions (tensor)
+    (invert-first-and-second (list-dim (lst tensor))))
+                    
+(defun list-dim (a-list)
+    (if (numberp (car a-list))
+        (list (length a-list))
+        (append (list-dim (lst (car a-list))) (list (length a-list)))))
             
 (defun fact (n)
   (if (< n 2)
