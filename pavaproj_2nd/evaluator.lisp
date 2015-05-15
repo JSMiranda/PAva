@@ -195,12 +195,48 @@
  (logical-dyadic (lambda (x y) (cond ((eq x 0) nil)
                     ((eq y 0) nil)
                     (t t))) t1 t2))
-					
-					
-					
-					
-					
+                                    
 
+
+(defun reshape (vv tt)
+    (let ((prevl nil)
+          (currl nil)
+          (dims (invert-first-and-second (lst vv)))
+          (dims-mult 1)
+          (vals (vect-to-list tt))
+          (curr-index 0))
+         ;; dims-mult = D2*D3*...*DN
+         (dolist (item dims)
+                 (setf dims-mult (* dims-mult item)))
+         (setf dims-mult (/ dims-mult (first dims)))
+         ;; creating a big and simple list out of the tensor
+         (dotimes (i (* (first dims) dims-mult))
+                  (setf currl (append currl (list (nth (rem curr-index (length vals)) vals))))
+                  (incf curr-index))
+         ;; creating the matrix
+         (dolist (item dims)
+                 (setf prevl currl)
+                 (setf currl nil)
+                 (dotimes (i (/ (length prevl) item))
+                                    ; (format t "BEFORE:~%Prev: ~s~%Curr: ~s~%item = ~s~%" prevl currl item)
+                          (setf currl (append (list (make-vect (last prevl item))) currl))
+                          (nbutlast prevl item)
+                                     ;(format t "AFTER: ~%Prev: ~s~%Curr: ~s~%" prevl currl)
+                                     ))
+         (make-vect currl)))
+
+
+(defun vect-to-list (vv)
+    (let ((res nil))
+        (if (numberp (car (lst vv)))
+            (setf res (lst vv))
+            (dotimes (i (length (lst vv)))
+                (setf res (append res (vect-to-list (nth i (lst vv)))))))
+        res))
+                                    
+                                    
+                                    
+                                    
  ;only for 1dim tensors
  (defun catenate ( v1 v2)
 	  (make-vect (append (lst v1) (lst v2))))
@@ -275,6 +311,7 @@ TODO
 				)
 
 ;;;;;;MONADIC & DYADIC FUNCTIONS;;;;;;
+                    
 (defun .- (t1 &optional t2)
 	(if (null t2)
 		(monadic '- t1)
