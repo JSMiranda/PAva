@@ -55,7 +55,15 @@
 (defgeneric monadic (op arg))
 
 (defmethod monadic (op (vv vect))
-	(make-vect (mapcar op (lst vv))))
+        (reshape (shape vv) (make-vect (mapcar op (vect-to-list vv)))))
+#|
+    (if (numberp (car (lst vv)))
+        (make-vect (mapcar op (lst vv)))
+        (dolist (item (lst vv))
+                (monadic op (lst item)))))
+|#
+
+
 
 (defmethod monadic (op (ss scalar))
 	(make-scalar (mapcar op (lst ss))))
