@@ -237,7 +237,7 @@
                           (nbutlast prevl item)
                                      ;(format t "AFTER: ~%Prev: ~s~%Curr: ~s~%" prevl currl)
                                      ))
-         (make-vect currl)))
+         (first currl)))
 
 
 (defun vect-to-list (vv)
@@ -282,8 +282,8 @@
 	)		
 )
 
-#|v
-(defmethod drop (( v vector) (v vect))
+#|   2º 
+(defmethod drop (( v vect) (t vect))
 	;TODO
 )
 
@@ -312,19 +312,22 @@ TODO
 (defun select( booltensor tensor)
 
 		   
-	(make-vect (select-rec (list)(lst booltensor) (lst tensor))))
+	(make-vect (select-rec (list)(lst booltensor) (lst tensor)))
+)
 	
-	(defun select-rec (res boolt tl)
 	
-		(if (not boolt)
-			res
-			(if (eq (car boolt) 1)
-				(select-rec  (append res (list(car tl))) (cdr boolt) (cdr tl))
-				(select-rec res (cdr boolt) (cdr tl))			
-			))
-				)
+(defun select-rec (res boolt tl)
+	
+	(if (not boolt)
+		res
+		(if (eq (car boolt) 1)
+			(select-rec  (append res (list(car tl))) (cdr boolt) (cdr tl))
+			(select-rec res (cdr boolt) (cdr tl))			
+		)
+	)
+)
 
-;;;;;;MONADIC & DYADIC FUNCTIONS;;;;;;
+;;;;;;MONODYADIC FUNCTIONS;;;;;;
                     
 (defun .- (t1 &optional t2)
 	(if (null t2)
@@ -350,17 +353,45 @@ TODO
 ;two tensors, returns a new tensor with the result of applying the function
 ;to every combination of values from the first and second tensors.
 
-
+;has a major bug with some lambda inputs!!!!!!!
 (defun fold (func)
     (lambda (vv) (let* ((ll (lst vv))
-                       (res (funcall func (s (first ll)) (s (second ll)))))
-                      (setf ll (cddr ll))
-                      (dolist (item ll)
-                              (setf res (funcall func res (s item))))
-                 res)))
+                       (res (s (first ll))))
+					   
+							(dotimes (count (length ll))
+								(if (> count 0)
+								(setf res (funcall func res (s (nth count ll))))))
+								
+								  
+				res)))
 
 
 ;(defun scan ())
+
+#|
+(defun scan (operator) 
+	(lambda (tensor1)
+		(let ((accumulator (make-instance 'scalar :val (row-major-aref (tensor-vec tensor1) 0)))
+			   (result (make-array (array-dimensions (tensor-vec tensor1)))))
+			(dotimes (index (array-total-size(tensor-vec tensor1)))
+				(if (< 0 index)
+					(progn (setf accumulator
+						   (funcall operator 
+						    accumulator 
+						    (make-instance 'scalar :val (row-major-aref (tensor-vec tensor1) index))
+
+						   ))
+					(setf (row-major-aref result index) (scalar-val accumulator)))
+
+				(setf (row-major-aref result index) (row-major-aref (tensor-vec tensor1) 0))
+				)
+			)
+			(make-instance 'tensor :vectores result)
+		)
+		
+	)
+)
+|#
 
 ;(defun outer-product())
 
