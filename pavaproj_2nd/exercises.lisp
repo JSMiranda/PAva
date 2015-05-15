@@ -9,16 +9,10 @@
 	(select  (.and (.<= n1 vv) (.>= n2 vv)) vv))
 
 
-;(within (v 2 7 3 1 9 8 4 6 5) (s 5) (s 8))
-;7 8 6 5
-
 
 (defun ravel (tt)
 (reshape (catenate (s 1) (funcall (fold #'.*) (shape tt))) tt))
 
-
-;(ravel (reshape (v 2 3 4) (interval 10)))
-;1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4
 
 #|
 (defun primes (ss))

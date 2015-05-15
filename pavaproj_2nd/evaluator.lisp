@@ -262,21 +262,13 @@
 		(n (car(lst s)))
 		(res (lst v)))
 		
-	
-			
-	
 		(cond
-	
-			((< n 0)	(dotimes (count (* n (- 1)))
-				
+			((< n 0)	(dotimes (count (* n (- 1)))	
 						(setf res (reverse (cdr (reverse res)))))
-			)
-					
-			((> n 0) (dotimes (count n )
-				
+			)		
+			((> n 0) (dotimes (count n )	
 						(setf res (cdr res)))
 			)
-		
 			(t res))
 		(make-vect res)
 	)		
@@ -353,7 +345,7 @@ TODO
 ;two tensors, returns a new tensor with the result of applying the function
 ;to every combination of values from the first and second tensors.
 
-;has a major bug with some lambda inputs!!!!!!!
+
 (defun fold (func)
     (lambda (vv) (let* ((ll (lst vv))
                        (res (s (first ll))))
@@ -363,35 +355,13 @@ TODO
 								(setf res (funcall func res (s (nth count ll))))))
 								
 								  
-				res)))
+				res))
+)
 
+				
 
 ;(defun scan ())
 
-#|
-(defun scan (operator) 
-	(lambda (tensor1)
-		(let ((accumulator (make-instance 'scalar :val (row-major-aref (tensor-vec tensor1) 0)))
-			   (result (make-array (array-dimensions (tensor-vec tensor1)))))
-			(dotimes (index (array-total-size(tensor-vec tensor1)))
-				(if (< 0 index)
-					(progn (setf accumulator
-						   (funcall operator 
-						    accumulator 
-						    (make-instance 'scalar :val (row-major-aref (tensor-vec tensor1) index))
-
-						   ))
-					(setf (row-major-aref result index) (scalar-val accumulator)))
-
-				(setf (row-major-aref result index) (row-major-aref (tensor-vec tensor1) 0))
-				)
-			)
-			(make-instance 'tensor :vectores result)
-		)
-		
-	)
-)
-|#
 
 ;(defun outer-product())
 
