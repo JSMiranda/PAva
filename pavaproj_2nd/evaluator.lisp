@@ -377,7 +377,11 @@ TODO
 (defun list-dim (a-list)
     (if (numberp (car a-list))
         (list (length a-list))
-        (append (list-dim (lst (car a-list))) (list (length a-list)))))
+	    (append (list-dim (lst (car a-list))) 		
+				(if (eq (length a-list) 1)
+					nil
+					(list(length a-list)))
+		)))
             
 (defun fact (n)
   (if (< n 2)
