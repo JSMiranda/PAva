@@ -20,7 +20,7 @@
     (let ((dim (calculate-dimensions obj)))
         (cond ((eq dim 1) (format out "~{~a~^ ~}" (lst obj)))
               ((eq dim 2) (format out "~{~a~^~%~}" (lst obj)))
-              ((> dim 2)  (format out (concatenate 'string "~{~a~^~" (write-to-string dim) "%~}") (lst obj))))))
+              ((> dim 2)  (format out (concatenate 'string "~{~a~^~" (write-to-string (- dim 1)) "%~}") (lst obj))))))
 			  
 
 (defun make-tensor (lst)
@@ -215,7 +215,7 @@
 (defun reshape (vv tt)
     (let ((prevl nil)
           (currl nil)
-          (dims (invert-first-and-second (lst vv)))
+          (dims (reverse (lst vv)))
           (dims-mult 1)
           (vals (vect-to-list tt))
           (curr-index 0))
@@ -295,7 +295,7 @@ TODO
 				(setf (nth count res) 1)
 				(setf (nth count res) 0))
 	)
-	(make-vect res))
+	(reshape (shape tensor1) (make-vect res)))
 
 )
 

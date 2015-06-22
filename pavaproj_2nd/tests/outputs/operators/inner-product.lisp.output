@@ -1,0 +1,33 @@
+This is SBCL 1.2.4.debian, an implementation of ANSI Common Lisp.
+More information about SBCL is available at <http://www.sbcl.org/>.
+
+SBCL is free software, provided as is, with absolutely no warranty.
+It is mostly in the public domain; some portions are provided under
+BSD-style licenses.  See the CREDITS and COPYING files in the
+distribution for more information.
+* 
+T
+* 
+300
+* 
+351384
+* 
+-280
+* 
+70 100
+150 220
+* 
+90 120 150
+190 260 330
+* 
+90 120 150
+190 260 330
+290 400 510
+* 
+60 120 180 240 300 360
+150 300 450 600 750 900
+60 120 180 240 300 360
+150 300 450 600 750 900
+60 120 180 240 300 360
+150 300 450 600 750 900
+* 
